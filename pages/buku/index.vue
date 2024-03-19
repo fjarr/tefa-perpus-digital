@@ -45,7 +45,7 @@
 <style scoped>
 .card-body {
   width: 100%;
-  height: 16em;
+  height: 19em;
   padding: 0;
 }
 
