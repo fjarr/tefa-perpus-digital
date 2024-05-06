@@ -17,23 +17,20 @@
         </h2>
       </div>
       <div class="col-lg-12">
-        <form>
+        <form @submit.prevent="kirimData">
           <div class="mb-3">
-            <input type="text" class="form-control form-control-lg rounded-5" placeholder="NAMA........" />
+            <input v-model="form.nama" type="text" class="form-control form-control-lg rounded-5" placeholder="NAMA........" />
           </div>
           <div class="mb-3">
-            <select class="form-control form-control-lg form-select rounded-5">
+            <select v-model="form.keanggotaan" class="form-control form-control-lg form-select rounded-5">
               <option value="">KATEGORI</option>
-              <option value="Siswa">Siswa</option>
-              <option value="Guru">Guru</option>
-              <option value="Staf">Staf</option>
-              <option value="Umum">Umum</option>
+              <option v-for="(member,i) in members" :key="i" :value="member.id">{{ member.nama }}</option>
             </select>
           </div>
-          <div class="mb-3">
+          <div class="mb-3" v-if="form.keanggotaan == 2 ">
             <div class="row">
               <div class="col-md-4">
-                <select class="form-control form-control-lg form-select rounded-5 mb-2">
+                <select v-model="form.kelas" class="form-control form-control-lg form-select rounded-5 mb-2">
                   <option value="">KELAS</option>
                   <option value="X">X</option>
                   <option value="XI">XI</option>
@@ -41,7 +38,7 @@
                 </select>
               </div>
               <div class="col-md-4">
-                <select class="form-control form-control-lg form-select rounded-5 mb-2">
+                <select v-model="form.jurusan" class="form-control form-control-lg form-select rounded-5 mb-2">
                   <option value="">JURUSAN</option>
                   <option value="PPLG">PPLG</option>
                   <option value="TJKT">TJKT</option>
@@ -51,7 +48,7 @@
                 </select>
               </div>
               <div class="col-md-4">
-                <select class="form-control form-control-lg form-select rounded-5 mb-2">
+                <select v-model="form.no_kelas" class="form-control form-control-lg form-select rounded-5 mb-2">
                   <option value="">NO KELAS</option>
                   <option value="1">1</option>
                   <option value="2">2</option>
@@ -62,11 +59,13 @@
             </div>
           </div>
           <div class="input-group mt-3">
-            <textarea class="form-control rounded-5 mb-2" aria-label="With textarea"
-              placeholder="KEPERLUAN........"></textarea>
+            <select v-model="form.keperluan" class="form-control form-control-lg form-select rounded-5 mb-2">
+                  <option value="">Keperluan </option>
+                  <option v-for="(item,i) in objectives " :key="i" :value="item.id">{{ item.nama }}</option>
+                </select>
           </div>
           <div class="input-group mt-4">
-            <button type="button" class="btn btn-outline-primary rounded-4"
+            <button type="submit" class="btn btn-outline-primary rounded-4"
               style="color: black; font-family: lnria-serif">
               KIRIM
             </button>
@@ -76,9 +75,48 @@
     </div>
   </div>
 </template>
+
+
+<script setup>
+useHead({ title: "form pengunjung" })
+const supabase= useSupabaseClient()
+const members = ref([])
+const objectives = ref([])
+
+const form = ref({
+  nama:"", 
+  keanggotaan:"",
+  no_kelas:"",
+  jurusan:"",
+  kelas:"",
+  keperluan:"",
+})
+
+const kirimData = async() => {
+  console.log(form.value)
+  const { error } = await supabase
+  .from('pengunjung')
+  .insert([form.value]) 
+  if(!error) navigateTo('/pengunjung')
+}
+const getKeanggotaan=async () => {
+  const { data, error } = await supabase.from('keanggotaan').select('*')
+  if(data) members.value = data
+}
+const getKeperluan = async () => {
+  const { data, error } = await supabase.from('keperluan').select('*')
+  if(data) objectives.value = data
+}
+onMounted(() => {
+  getKeanggotaan()
+  getKeperluan()
+}) 
+</script>
+
 <style scoped>
 i{
-  font-size: 60px; color: #000000
+  font-size: 60px; 
+  color: #000000;
 }
 @media only screen and (max-width: 820px) {
   h2 {
@@ -91,4 +129,3 @@ i{
   }
 }
 </style>
-

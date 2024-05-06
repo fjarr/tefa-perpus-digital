@@ -17,9 +17,11 @@
       </div>
       <div class="col-lg-12">
         <div class="my-3">
-          <input type="search" class="form-control form-control-lg rounded-5" placeholder="filter...." />
+          <form @submit.prevent="filter">
+          <input v-model="keyword" type="search" class="form-control form-control-lg rounded-5" placeholder="filter...." />
+          </form>
         </div>
-        <div class="my-3 text-muted">menampilkan 3 dari 3</div>
+        <div class="my-3 text-muted">menampilkan {{ visitors.length }} dari {{ visitor }}</div>
       </div>
     </div>
     <table class="table table-bordered">
@@ -33,26 +35,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>1</td>
-          <td>Fajar ismail</td>
-          <td>Siswa</td>
-          <td>26 februari 2024, 10.10.00</td>
-          <td>PINJAM BUKU</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>MAIL</td>
-          <td>Siswa</td>
-          <td>26 februari 2024, 7.20.00</td>
-          <td>PINJAM BUKU</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>UDIN NGANGA</td>
-          <td>Siswa</td>
-          <td>25 februari 2024, 12.58.33</td>
-          <td>PINJAM BUKU</td>
+        <tr v-for="(visitor, i) in visitors" :key="i">
+          <td>{{ i + 1 }}</td>
+          <td>{{ visitor.nama }}</td>
+          <td>{{ visitor.keanggotaan.nama }}</td>
+          <td>{{ visitor.tanggal }}/{{ visitor.waktu }}</td>
+          <td>{{ visitor.keperluan.nama }}</td>
         </tr>
       </tbody>
     </table>
@@ -79,3 +67,34 @@ i {
   }
 }
 </style>
+<script setup>
+useHead({ title: "daftar pengunjung" })
+const supabase = useSupabaseClient()
+const visitors = ref([])
+const visitor = ref(0)
+const keyword =ref("")
+const getPengunjung = async () => {
+  const { data, error } = await supabase.from('pengunjung')
+    .select(`*, keanggotaan(*), keperluan(*)`)
+    .order("id", { ascending: false });
+  if (data) visitors.value = data
+}
+
+const hitungData = async() => {
+  const { data, count } = await supabase.from("pengunjung").select("*", { count : 'exact'})
+  if (data) visitor.value = count
+
+}
+const filter = async () => {
+  const { data, error } = await supabase.from('pengunjung')
+    .select(`*, keanggotaan(*), keperluan(*)`)
+    .ilike('nama',`%${keyword.value}%`)
+  if (data) visitors.value = data
+}
+
+onMounted(() => {
+  hitungData()
+  getPengunjung()
+
+})
+</script>
