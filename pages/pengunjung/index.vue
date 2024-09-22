@@ -25,26 +25,28 @@
         </div>
       </div>
     </div>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>No</th>
-          <th>Nama</th>
-          <th>Keanggotaan</th>
-          <th>Waktu</th>
-          <th>Keperluan</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(visitor, i) in visitors" :key="i">
-          <td>{{ i + 1 }}</td>
-          <td>{{ visitor.nama }}</td>
-          <td>{{ visitor.keanggotaan.nama }}</td>
-          <td>{{ visitor.tanggal }}/{{ visitor.waktu }}</td>
-          <td>{{ visitor.keperluan.nama }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>Keanggotaan</th>
+            <th>Waktu</th>
+            <th>Keperluan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(visitor, i) in visitors" :key="i">
+            <td>{{ i + 1 }}</td>
+            <td>{{ visitor.nama }}</td>
+            <td>{{ visitor.keanggotaan.nama }}</td>
+            <td>{{ visitor.tanggal }}/{{ visitor.waktu }}</td>
+            <td>{{ visitor.keperluan.nama }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -62,6 +64,10 @@ i {
 .table {
   margin-top: 20px;
   font-size: 1rem;
+}
+
+.table-responsive {
+  overflow-x: auto;
 }
 
 @media only screen and (max-width: 820px) {
