@@ -7,31 +7,32 @@
         </nuxt-link>
       </div>
       <div class="col-10">
-        <h2 style="
-            text-align: center;
-            font-family: inter;
-            margin-top: 20px;
-          ">
-          RIWAYAT KUNJUNGAN
-        </h2>
+        <h2 class="text-center title">RIWAYAT KUNJUNGAN</h2>
       </div>
-      <div class="col-lg-12">
+      <div class="col-12">
         <div class="my-3">
           <form @submit.prevent="filter">
-          <input v-model="keyword" type="search" class="form-control form-control-lg rounded-5" placeholder="filter...." />
+            <input
+              v-model="keyword"
+              type="search"
+              class="form-control form-control-lg rounded-5"
+              placeholder="filter...."
+            />
           </form>
         </div>
-        <div class="my-3 text-muted">menampilkan {{ visitors.length }} dari {{ visitor }}</div>
+        <div class="my-3 text-muted">
+          Menampilkan {{ visitors.length }} dari {{ visitor }}
+        </div>
       </div>
     </div>
     <table class="table table-bordered">
       <thead>
         <tr>
-          <td>No</td>
-          <td>Nama</td>
-          <td>Keanggotaan</td>
-          <td>Waktu</td>
-          <td>Keperluan</td>
+          <th>No</th>
+          <th>Nama</th>
+          <th>Keanggotaan</th>
+          <th>Waktu</th>
+          <th>Keperluan</th>
         </tr>
       </thead>
       <tbody>
@@ -46,55 +47,66 @@
     </table>
   </div>
 </template>
+
 <style scoped>
 i {
   font-size: 60px;
   color: #000000;
 }
 
+.title {
+  font-family: inter;
+  margin-top: 20px;
+}
+
+.table {
+  margin-top: 20px;
+  font-size: 1rem;
+}
+
 @media only screen and (max-width: 820px) {
   table {
-    font-size: 5px;
+    font-size: 0.8rem;
   }
 
-  h2 {
-    font-size: 15px;
+  .title {
+    font-size: 1.2rem;
   }
 
   i {
     font-size: 35px;
-    color: #000000;
   }
 }
 </style>
+
 <script setup>
 useHead({ title: "daftar pengunjung" })
 const supabase = useSupabaseClient()
 const visitors = ref([])
 const visitor = ref(0)
-const keyword =ref("")
+const keyword = ref("")
+
 const getPengunjung = async () => {
-  const { data, error } = await supabase.from('pengunjung')
+  const { data } = await supabase.from('pengunjung')
     .select(`*, keanggotaan(*), keperluan(*)`)
     .order("id", { ascending: false });
   if (data) visitors.value = data
 }
 
-const hitungData = async() => {
-  const { data, count } = await supabase.from("pengunjung").select("*", { count : 'exact'})
-  if (data) visitor.value = count
-
+const hitungData = async () => {
+  const { count } = await supabase.from("pengunjung").select("*", { count: 'exact' })
+  visitor.value = count
 }
+
 const filter = async () => {
-  const { data, error } = await supabase.from('pengunjung')
+  const { data } = await supabase.from('pengunjung')
     .select(`*, keanggotaan(*), keperluan(*)`)
-    .ilike('nama',`%${keyword.value}%`)
+    .ilike('nama', `%${keyword.value}%`)
   if (data) visitors.value = data
 }
 
 onMounted(() => {
   hitungData()
   getPengunjung()
-
 })
 </script>
